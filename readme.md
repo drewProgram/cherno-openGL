@@ -69,6 +69,7 @@ In order to the build process works we need to define the GLEW_STATIC preprocess
 After that, we need to initialize GLEW. After having a valid OpenGL context created, we use the function ```glewInit()```. To make sure everything is working, we can call a basic function.
 
 ```cpp
+#include <GL/glew.h>
 ...
 glfwMakeContextCurrent(window);
 
@@ -78,5 +79,30 @@ if (glewInit() != GLEW_OK)
 
 If the function returns GLEW_OK, then you have access to all modern OpenGL features.
 
+## Concepts
+Best doc reference for OpenGL: [docs.GL](http://docs.gl/)
+
+```Vertex buffer```: array of bytes of memory. Blob of memory which we can push bytes into it. Instead of being in the CPU, is buffer on the GPU VRAM. 
+```Shader```: Code which runs on the GPU.
+
+vertex: point on the geometry
+
+OpenGL is a state machine.
+
+Select a buffer and a shader, then draw a triangle. Based on which buffer and shader it will determine where the triangle will be draw and how.
+
+Whenever you want to use a buffer, you will use the id you passed in the buffer creation function.
+
+```Vertex shader```: Called for each vertex. Used for defining position.
+ 
+```Fragment shader```: Called for every pixel. Used for defining colors.
+
 ## Code
-```glGetString(GL_VERSION)```: gets the current OpenGL version.
+```glGetString(GL_VERSION)```
+Gets the current OpenGL version.
+
+```glVertexAttribPointer(index, size, type, normalized, stride, pointer)```
+`size`:  How much indexes each vertex has
+`stride`: Specifies the offset of each vertex. (vertex 1 starts at 0 bytes, vertex 2 starts at 4 bytes...)
+`pointer`: pointer to an offset of positions inside the vertex (when starts the position, when the texture starts...)
+
