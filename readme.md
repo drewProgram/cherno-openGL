@@ -85,7 +85,7 @@ Best doc reference for OpenGL: [docs.GL](http://docs.gl/)
 ```Vertex buffer```: array of bytes of memory. Blob of memory which we can push bytes into it. Instead of being in the CPU, is buffer on the GPU VRAM. 
 ```Shader```: Code which runs on the GPU.
 
-vertex: point on the geometry
+`Vertex:` point on the geometry
 
 OpenGL is a state machine.
 
@@ -97,12 +97,71 @@ Whenever you want to use a buffer, you will use the id you passed in the buffer 
  
 ```Fragment shader```: Called for every pixel. Used for defining colors.
 
+Object name - unsigned int that identify a buffer.
+
 ## Code
-```glGetString(GL_VERSION)```
+### glGetString(GL_VERSION)
 Gets the current OpenGL version.
 
-```glVertexAttribPointer(index, size, type, normalized, stride, pointer)```
-`size`:  How much indexes each vertex has
-`stride`: Specifies the offset of each vertex. (vertex 1 starts at 0 bytes, vertex 2 starts at 4 bytes...)
-`pointer`: pointer to an offset of positions inside the vertex (when starts the position, when the texture starts...)
+### void glGenBuffers(GLsizei n, GLuint* buffers)
+#### Params
+`n`: Specifies the number of buffer objects names to be generated.
+`buffers`: Specifies an array which the generated buffer object names are stored.
 
+#### Description
+Returns `n` buffer object names in `buffers`. Buffers object names returned by a call to `glGenBuffers` are note returned by subsequent calls, unless they are first deleted with `glDeleteBuffers`.
+No buffer objects are associated with returned buffer object names until they are first bound by calling `glBindBuffer`.
+
+### void glBindBuffer(GLenum target, GLuint buffer)
+#### Params
+`target`: Specifies the target to which the buffer object is bound, which must be one of the buffer binding targets in the following table:
+
+`buffer`: Specifies the name of a buffer object.
+
+#### Description
+Binds a buffer object to the specified buffer binding point. Calling `glBindBuffer` with `target` set to one of the accepted symbolic constants and `buffer` set to the name of a buffer object binds that buffer object name to the target. If no buffer object with name `buffer` exists, one is created with that name. When a buffer object is bound to a target, the previous binding for that target is automatically borken.
+The State of a buffer object immediately fter it is first bound is an unmapped zero-sized memory buffer wit *GL_READ_WRITE* access and *GL_STATIC_DRAW* usage.
+When a non-zero buffer object is bound to the *GL_ARRAY_BUFFER* target, the vertex array pointer param is interpreted as an offset within the buffer object mesaured in basic machine units.
+
+### void glBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage)
+#### Params
+- `target`: Specifies the target to which the buffer object is bound for `glBufferData`, which must be one of the buffer binding targets of the table (same options as the glBindBuffer function).
+- `buffer`: Specifies the name of the buffer object for `glNamedBufferData` function.
+- `size`: Specifies the size in bytes of the buffer object's new data store.
+- `data`: Specifies a pointer to data that will be copied into the data sotre for initialization, or NULL if no data is to be copied.
+- `usage`: Specifies the expected pattern of the data store, The symbolic constant must be *GL_STREAM_DRAW*, *GL_STREAM_READ*, *GL_STREAM_COPY*, *GL_STATIC_DRAW*, *GL_STATIC_READ*, *GL_STATIC_COPY*, *GL_DYNAMIC_DRAW*, *GL_DYNAMIC_READ*, or *GL_DYNAMIC_COPY*.
+
+#### Description
+Create a new data store for a buffer object. In case of `glBufferData`, the buffer object currently bound to `target` is used.
+While creating the new storage, any pre-existing data store is deleted. The new data sotre is created with the specified `size` in bytes and `usage`. If `data` is not NULL, the data sotre is initialized with data from this pointer. In its initial state, the new data sotre is not mapped, it has a NULL, mapped pointer, and its mapped access is *GL_READ_WRITE*.
+`usage` is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store. It does not, however, constrain the actual usage of the data store. `usage` can be brokken down into two parts: first, the frequency of access (modification and usage), and second, the nature of that access. The frequency of access may be one of these:
+**STREAM**: The data store contents will be modified once and used at most a few times.
+**STATIC**: The data store contents will be modified once and used many times.
+**DYNAMIC**: The data store contents will be modified repatedly and used many times.
+
+The nature of access may be one of these:
+
+**DRAW**: The data store contents are modified by the application, and used as the source for GL drawing and image specification commands.
+**READ**: The data store contents are modified by reading data from the GL, and used to return that data when queried by the application.
+**COPY**: The data store contents are modified by reading data from the GL, and used as the source for GL drawing and image specification commands.
+
+#### void glEnableVertexAttribArray(GLuint index)
+#### Parameters
+- `index`: Specifies the index of the generic vertex attribute to be enabled or disabled.
+
+#### Description
+Enable the generic vertex attribute array specified by `index`. It uses currently bound vertex array object for the operation.
+
+### void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer)
+- `index`: Specifies the index of the generic vertex attribute to be modified.
+- `size`:  How much indexes each vertex has.
+- `type`: Specifies the data type of each components in the array.
+- `stride`: Specifies the offset of each vertex. (vertex 1 starts at 0 bytes, vertex 2 starts at 4 bytes...).
+- `pointer`: pointer to an offset of positions inside the vertex (when starts the position, when the texture starts...).
+
+### void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* lenght)
+#### Parameters
+- `shader`: Specfies the handle of the shader object whose source code is to be replaced.
+- `count`: Specifies the number of elements in the `string` and `length` arrays.
+- `string`: Specifies an array of pointers to strings containing the source code to be loaded into the shader.
+- `length`: Specifies an array of string lengths.
