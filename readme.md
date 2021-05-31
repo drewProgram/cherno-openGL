@@ -85,7 +85,9 @@ Best doc reference for OpenGL: [docs.GL](http://docs.gl/)
 ```Vertex buffer```: array of bytes of memory. Blob of memory which we can push bytes into it. Instead of being in the CPU, is buffer on the GPU VRAM. 
 ```Shader```: Code which runs on the GPU.
 
-`Vertex:` point on the geometry
+`Vertex:` point on the geometry.
+
+`Uniform`: another way of setting data from the CPU to the GPU.
 
 OpenGL is a state machine.
 
