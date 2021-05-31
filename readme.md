@@ -153,11 +153,17 @@ The nature of access may be one of these:
 Enable the generic vertex attribute array specified by `index`. It uses currently bound vertex array object for the operation.
 
 ### void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer)
+#### Parameters
 - `index`: Specifies the index of the generic vertex attribute to be modified.
 - `size`:  How much indexes each vertex has.
 - `type`: Specifies the data type of each components in the array.
 - `stride`: Specifies the offset of each vertex. (vertex 1 starts at 0 bytes, vertex 2 starts at 4 bytes...).
 - `pointer`: pointer to an offset of positions inside the vertex (when starts the position, when the texture starts...).
+
+#### Description
+Specify the location and data format of the array of generic vertex attributes at index `index` to use when rendering. `size` specifies the number of components per attribute and must be 1, 2, 3, 4 or *GL_BGRA*. `type` specifies the data type of each component, and `stride` specifies the byte stride from one attribute to the next, allowing vertices and attributes to be packed into a single array or stored in separarate arrays.
+
+If `pointer` is not NULL, a non-zero named buffer object must be bound to the *GL_ARRAY_BUFFER* target, otherwise an error is generated. `pointer` is treated as a byte offset into the buffer object's data store. The buffer object binding (*GL_ARRAY_BUFFER_BINDING*) is saved as generic vertex attribute array state(*GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING*) for index `index`.
 
 ### void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* lenght)
 #### Parameters
@@ -165,3 +171,18 @@ Enable the generic vertex attribute array specified by `index`. It uses currentl
 - `count`: Specifies the number of elements in the `string` and `length` arrays.
 - `string`: Specifies an array of pointers to strings containing the source code to be loaded into the shader.
 - `length`: Specifies an array of string lengths.
+
+#### Description
+Sets the soruce code in `shader` to the source code in the array of strings specified by `string`. Any source code previously stored in the shader object is completely replaced. The number of strings in the array is specified by `count`. If `length` is NULL, each string is assumed to be null terminated. If `length` is a value other than NULL, it points to an array containing a string length for each of the corresponding string (the null character is not counted as part of the string length) or a value less than 0 to indicate that the string is null terminated. The source code strings are note scanned or pased at this time; they are simply copied into the specified shader object.
+
+### void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)
+#### Parameters
+- `mode`: Specifies what kind of primitives to render. Symbolic constants *GL_POINTS*, *GL_LINE_STRIP*, *GL_LINE_LOOP*, *GL_LINES*, *GL_LINE_STRIP_ADJACENCY*, *GL_LINES_ADJACENCY*, *GL_TRIANGLE_STRIP*,*GL_TRIANGLE_FAN*, *GL_TRIANGLES*, *GL_TRIANGLE_STRIP_ADJACENCY*, *GL_TRIANGLES_ADJACENCY* and *GL_PATCHES* are accepted.
+- `count`: Specifies the number of elements to be rendered.
+- `type`: Specifies the type of the values in `indices`. Must be one of *GL_UNSIGNED_BYTE*, *GL_UNSIGNED_SHORT* or *GL_UNSIGNED_INT*.
+- `indices`: Specifies an offest of the first index in the array in the data store of the buffer currently bound to the GL_ELEMENT_ARRAY_BUFFER target.
+
+#### Description
+Specifies multiple geometric primitives with very few subroutine calls. Instead of calling a GL function to pass each individual vertex, normal, texture coordinate, edge flag or color, you can prespecify  separate arrays of vertices, normals, and so on, and use them to construct a sequence of primitives with a single call to `glDrawElements`.
+When `glDrawElements` is called, it uses `count` sequencial elements from an enabled array, starting at `indicies` to construct a sequence of geometric primitives. `mode` specifies what kind of primitives are constructed and how the array elements construct these primitives. If more than one array is enabled, each is used.
+Vertex attributes that are modified by `glDrawElements` have an unspecified value after `glDrawElements` returns. Attributes that aren't modified maintain their previous values.
