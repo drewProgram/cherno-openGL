@@ -131,6 +131,10 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello OpenGL", NULL, NULL);
     if (!window)
@@ -165,6 +169,11 @@ int main(void)
         2, 3, 0
     };
 
+    // generating vertex array object
+    unsigned int vao;
+    GLCall(glGenVertexArrays(1, &vao));
+    GLCall(glBindVertexArray(vao));
+
     // creating buffer
     // param 1 - how many buffers u want
     // param 2 - pointer to an unsigned int (it's the id for the generated buffer)
@@ -197,6 +206,11 @@ int main(void)
     // setting the uniform value in order to use on the glsl file
     GLCall(glUniform4f(location, 0.5f, 0.0f, 0.5f, 1.0f));
 
+    GLCall(glBindVertexArray(0));
+    GLCall(glUseProgram(0));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+
     float r = 0.0f;
     float increment = 0.05f;
 
@@ -206,8 +220,12 @@ int main(void)
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
-        // 0.5f, 0.0f, 0.5f, 1.0f
+        GLCall(glUseProgram(shader));
         GLCall(glUniform4f(location, r, 0.0f, 0.5f, 1.0f));
+
+        GLCall(glBindVertexArray(vao));
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+
         // count - indices of the array
         // as we already bound the ibo to the ELEMENT_ARRAY_BUFFER we can set the
         // const void* indices as null
