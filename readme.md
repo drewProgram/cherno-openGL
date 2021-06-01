@@ -188,3 +188,4 @@ Sets the soruce code in `shader` to the source code in the array of strings spec
 Specifies multiple geometric primitives with very few subroutine calls. Instead of calling a GL function to pass each individual vertex, normal, texture coordinate, edge flag or color, you can prespecify  separate arrays of vertices, normals, and so on, and use them to construct a sequence of primitives with a single call to `glDrawElements`.
 When `glDrawElements` is called, it uses `count` sequencial elements from an enabled array, starting at `indicies` to construct a sequence of geometric primitives. `mode` specifies what kind of primitives are constructed and how the array elements construct these primitives. If more than one array is enabled, each is used.
 Vertex attributes that are modified by `glDrawElements` have an unspecified value after `glDrawElements` returns. Attributes that aren't modified maintain their previous values.
+
