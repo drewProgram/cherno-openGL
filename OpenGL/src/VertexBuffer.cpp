@@ -8,7 +8,7 @@ VertexBuffer::VertexBuffer(const void* data, unsigned int size)
     // selecting buffer (binding)
     // param 1 - type of data of the buffer
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RendererID));
-    // specifing data
+    // specifying data
     GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
 }
 

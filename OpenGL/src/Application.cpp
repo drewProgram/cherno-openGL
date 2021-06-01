@@ -10,6 +10,7 @@
 
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
 
 struct ShaderProgramSource
 {
@@ -147,17 +148,14 @@ int main(void)
         };
 
         // generating vertex array object
-        unsigned int vao;
-        GLCall(glGenVertexArrays(1, &vao));
-        GLCall(glBindVertexArray(vao));
-
+        VertexArray va;
         // creating vertex buffer
         VertexBuffer vb(positions, 4 * 2 * sizeof(float));
-
-        // you always need to enable the vertex in order to be able to draw it
-        GLCall(glEnableVertexAttribArray(0)); // same index as we'll use in glVertexAttribPointer
-        GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
-
+        
+        VertexBufferLayout layout;
+        layout.Push<float>(2);
+        va.AddBuffer(vb, layout);
+        
         // index buffer object
         IndexBuffer ib(indices, 6);
 
@@ -171,7 +169,7 @@ int main(void)
         // setting the uniform value in order to use on the glsl file
         GLCall(glUniform4f(location, 0.5f, 0.0f, 0.5f, 1.0f));
 
-        GLCall(glBindVertexArray(0));
+        va.Unbind();
         GLCall(glUseProgram(0));
         GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
@@ -188,7 +186,7 @@ int main(void)
             GLCall(glUseProgram(shader));
             GLCall(glUniform4f(location, r, 0.0f, 0.5f, 1.0f));
 
-            GLCall(glBindVertexArray(vao));
+            va.Bind();
             ib.Bind();
 
             // count - indices of the array
