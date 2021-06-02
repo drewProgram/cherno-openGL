@@ -189,3 +189,19 @@ Specifies multiple geometric primitives with very few subroutine calls. Instead 
 When `glDrawElements` is called, it uses `count` sequencial elements from an enabled array, starting at `indicies` to construct a sequence of geometric primitives. `mode` specifies what kind of primitives are constructed and how the array elements construct these primitives. If more than one array is enabled, each is used.
 Vertex attributes that are modified by `glDrawElements` have an unspecified value after `glDrawElements` returns. Attributes that aren't modified maintain their previous values.
 
+### void glTextParameteri(GLenum target, GLenum pname, GLint param)
+#### Parameters
+- `target`: Specifies the target to which the texture is bound for `glTexParameter`functions.
+- `texture`: Specifies the texture object name for `glTextureParameters` functions.
+- `pname`: Specifies the symbolic name of a single-valued texture parameter.
+- `param`: For the scalar commands, specifies the value of `pname`
+
+#### Description
+Assign the value or values in `params` to the texture parameter specified as `pname`. For `glTexParameter`, `target` defines the target texture, either `GL_TEXTURE_1D`, `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D`, `GL_TEXTURE_2D_ARRAY`, `GL_TEXTURE_2D_MULTISAMPLE`, `GL_TEXTURE_2D_MULTISAMPLE_ARRAY`, `GL_TEXTURE_3D`, `GL_TEXTURE_CUBE_MAP`, `GL_TEXTURE_CUBE_MAP_ARRAY`, or `GL_TEXTURE_RECTANGLE`. The following symbols are accepted in `pname` (not all are here, only the ones I already used):
+
+*GL_TEXTURE_MIN_FILTER*
+The texture minifying function is used whenever the level-of-detail function used when sampling from the texture determines that the texture should be minified. There are six defined minifying functions. Two of them use either the nearest texture elements or a weighted average of multiple texture elements to compute the texture value. The other four use mipmaps.
+A mipmap is an ordered set of arrays representing the same image at progressively lower resolutions. If the texture has dimensions 2 ^ n * 2 ^ m, there are *max(n,m) + 1* mipmaps. The first mipmap is the original texture, with dimensions 2 ^ n * 2 ^ m. Each subsequent mipmap has dimensions 2 ^ (k−1) * 2 ^ (l−1), where 2 ^ k * 2 ^ l are the dimensions of the previous mipmap, until either k = 0 or l = 0. At that point, subsequent mipmaps have dimension 1 * 2 ^ (k-1) * 1 until the final mipmap, which has dimension 1 * 1. To define the mipmaps, call `glTexImage1D`, `glTexImage2D`, `glTexImage3D`, `glCopyTexImage1D`, or `glCopyTexImage2D` with the *level* argument indicating the order of the mipmaps. Level 0 is the original texture; level max(n,m) is the final 1 * 1 mipmap.
+`params` supplies a function for minifying the texture as one of the following:
+- *GL_LINEAR*: Returns the weighted avarage of the four texture elements that are closest to the specified texture coordinates. These can include items wrapped or repeated from other parts of a texture, depending on the values of *GL_TEXTURE_WRAP_S* and *GL_TEXTURE_WRAP_T*, and on the exact mapping.
+
