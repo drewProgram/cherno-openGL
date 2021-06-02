@@ -18,3 +18,20 @@ bool GLLogCall(const char* function, const char* file, int line)
     }
     return true;
 }
+
+void Renderer::Clear() const
+{
+    GLCall(glClear(GL_COLOR_BUFFER_BIT));
+}
+
+void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
+{
+    //GLCall(glClear(GL_COLOR_BUFFER_BIT));
+
+	shader.Bind();
+	va.Bind();
+	ib.Bind();
+	// as we already bound the ibo to the ELEMENT_ARRAY_BUFFER we can set the
+    // const void* indices as null
+	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+}
