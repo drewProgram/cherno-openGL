@@ -8,9 +8,15 @@ layout(location = 1) in vec2 texCoord;
 // output data to the fragment shader
 out vec2 v_TexCoord;
 
+// take the matrix from the CPU to the shader
+// Model View Projection matrix
+uniform mat4 u_MVP;
+
 void main()
 {
-	gl_Position = position;
+	// taking the vertex position and multiply with the projection matrix
+	// moving to the appropriate space based on the orthographic matrix we provided
+	gl_Position = u_MVP * position;
 	v_TexCoord = texCoord;
 };
 

@@ -15,6 +15,9 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -82,9 +85,17 @@ int main(void)
         // index buffer object
         IndexBuffer ib(indices, 6);
 
+        // creating projection matrix
+        // we'll create an orthographic matrix (oppose of perspective projection)
+        // distance of 3 units to the top to bottom
+        // 4 units left to right
+        // multiplying the first 4 numbers will get the result of a 4x3 matrix
+        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.5f, 0.0f, 0.5f, 1.0f);
+        shader.SetUniformMat4f("u_MVP", proj);
 
         Texture texture("res/textures/image.png");
         texture.Bind();

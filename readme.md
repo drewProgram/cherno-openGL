@@ -227,3 +227,15 @@ Sets the wrap parameter for texture coordinate s to either *GL_CLAMP_TO_EDGE*, *
 #### Parameters
 - `target`: Specifies the target texture.
 - `level`: Specifies the level-of-detail number. Level 0 is the base image level. Level *n* is the *n*th mipmap reduction image. If `target` is *GL_TEXTURE_RECTANGLE* or *GL_PROXY_TEXTURE_RECTANGLE*, `level` must be 0.
+- `internalFormat`: Specifies the number of color components in the texture. Must be onde of base internal formats given in Table 1, one of the sized internal formats given in Table 2, or one of the compressed internal formats given in Table 3.
+- `width`: Specifies the width of the texture image. All implementations support texture images that are at least 1024 texels wide.
+- `height`: Specifies the height of the texture image, or the number of layers in a texture array, in the case of the *GL_TEXTURE_1D_ARRAY* and *GL_PROXY_TEXTURE_1D_ARRAY* targets. All implementations support 2D texture images that are at least 1024 texels high, and texture arrays that are at least 256 layers deep.
+- `border`: this value must be 0. (?????)
+- `format`: Specifies the format of the pixel data. The following symbolic values are accepcted: GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_RED_INTEGER, GL_RG_INTEGER, GL_RGB_INTEGER, GL_BGR_INTEGER, GL_RGBA_INTEGER, GL_BGRA_INTEGER, GL_STENCIL_INDEX, GL_DEPTH_COMPONENT, GL_DEPTH_STENCIL.
+- `type`: Specifies the data type of the pixel data.
+- `data`: Specifies a pointer to the image data in memory.
+
+#### Description
+Texturing allows elements of an image array to be read by shaders.
+
+To define texture images, call `glTexImage2D`. The arguments describe the parameters of the texture image, such as height, width, width of the border, LOD number (see glTexParameter), and number of color components provided. The last three arguments describe how the image is represented in memory.

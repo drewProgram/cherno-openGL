@@ -31,3 +31,57 @@ Each bitmap image of the mipmap set is a downsized duplicate of the main texture
 ## Math: Distances
 ### Manhattan distance
 The manhattan distance between two vectors is equal to the one-norm of the distance between the vectors. The distance function (also called a "metric") involved is also called the "taxi cab" metric.
+
+## Rendering
+### Blending
+Determines how we combine our output color with what is already in our target buffer.
+- Output: the color we output from our fragment shader (known as source);
+- Target buffer: the buffer our fragment shader is drawing to (known as destination).
+
+How the blending is made:
+**OpenGL**:
+```cpp
+// enable the blending
+glEnable(GL_BLEND);
+/*
+** src = how the src RGBA factor is computed (default is GL_ONE) 
+** dest = how the dest RGBA factor is computed (default is GL_ZERO)
+*/
+glBlendFunc(src, dest);
+/*
+** mode = how we combine the src and dest colors (default is GL_FUNC_ADD)
+*/
+glBlendEquation(mode); 
+```
+So what this means by default is:
+- 1 + 0 = 1
+- Use the source value
+
+As an example, I rendered the triskle png image using:
+- src = GL_SRC_ALPHA
+- dest = GL_ONE_MINUS_SRC_ALPHA
+
+So if the pixel I was rendering from the texture is transparent:
+- src alpha = 0;
+- dest = 1 - 0 = 1
+- Which means "use the destination color" - the color that's already in the buffer.
+
+The equation would be something like that:
+```
+R = (r_src * 0) + (r_dest * (1 - 0)) = r_dest
+G = (g_src * 0) + (g_dest * (1 - 0)) = g_dest
+B = (b_src * 0) + (b_dest * (1 - 0)) = b_dest
+A = (a_src * 0) + (a_dest * (1 - 0)) = a_dest
+```
+
+Now a more interesting example.
+
+Our pixel is partially transparent, with the properties of (1.0, 1.0, 1.0, 0.5) (RGBA), it's a white but translucent. Our destination buffer is cleared to magenta (1.0, 0.0, 1.0, 1.0). So using the same blending setting as above the equation would result:
+
+```
+R = (1.0 * 0.5) + (1.0 * (1 - 0.5)) = 1.0
+G = (1.0 * 0.5) + (0.0 * (1 - 0.5)) = 0.5
+B = (1.0 * 0.5) + (1.0 * (1 - 0.5)) = 1.0
+A = (0.5 * 0.5) + (1.0 * (1 - 0.5)) = 0.75
+```
+The result would be a good example of a glass. The white square becomes a bright pink as a result of the blending.
