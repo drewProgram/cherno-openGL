@@ -49,6 +49,7 @@ int main(void)
     // scope for the instantiated classes be deleted before the gl context ends
     {
         // positions must not have any duplicate coordinates
+        // first two values are the positions, the next two are the texture coordinates
         float positions[] = {
             -0.5f, -0.5f, 0.0f, 0.0f, // 0
              0.5f, -0.5f, 1.0f, 0.0f, // 1
@@ -63,6 +64,7 @@ int main(void)
             2, 3, 0
         };
 
+        // blending
         GLCall(glEnable(GL_BLEND));
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
@@ -71,6 +73,7 @@ int main(void)
         // creating vertex buffer
         VertexBuffer vb(positions, 4 * 4 * sizeof(float));
         
+        // creating buffer layout and pushing the elements of each index.
         VertexBufferLayout layout;
         layout.Push<float>(2);
         layout.Push<float>(2);

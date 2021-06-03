@@ -9,6 +9,7 @@ private:
 	std::string m_FilePath;
 	// local storage for the texture
 	unsigned char* m_LocalBuffer;
+	// BPP = Bits per pixel
 	int m_Width, m_Height, m_BPP;
 
 public:

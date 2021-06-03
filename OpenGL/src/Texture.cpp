@@ -10,7 +10,9 @@ Texture::Texture(const std::string& path)
 	// flips upside down the image (pngs starts to loading at the upside left,
 	// OpenGL needs to render on the bottom left (0.0, 0.0)
 	stbi_set_flip_vertically_on_load(1);
-	// desired channel = rgba
+	// we pass the file path and the width, height and BPP vars will be filled by this function with the
+	// texture info
+	// desired channel = rgba (4)
 	m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4);
 
 	// Generate texture
@@ -28,8 +30,10 @@ Texture::Texture(const std::string& path)
 	// Give OpenGL the data
 	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer));
+	// Unbinding texture
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 
+	// Freeing data
 	if (m_LocalBuffer)
 		stbi_image_free(m_LocalBuffer);
 }
@@ -41,6 +45,7 @@ Texture::~Texture()
 
 void Texture::Bind(unsigned int slot) const
 {
+	// binding in some texture slot (by default we're binding at slot 0)
 	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 }

@@ -101,6 +101,8 @@ Whenever you want to use a buffer, you will use the id you passed in the buffer 
 
 Object name - unsigned int that identify a buffer.
 
+**Texture slots**: OpenGL has 32 slots (actually it depends on the platform, but the maximum is 32) for binding textures more than one texture at once.
+
 ## Code
 ### glGetString(GL_VERSION)
 Gets the current OpenGL version.
@@ -123,6 +125,7 @@ No buffer objects are associated with returned buffer object names until they ar
 #### Description
 Binds a buffer object to the specified buffer binding point. Calling `glBindBuffer` with `target` set to one of the accepted symbolic constants and `buffer` set to the name of a buffer object binds that buffer object name to the target. If no buffer object with name `buffer` exists, one is created with that name. When a buffer object is bound to a target, the previous binding for that target is automatically borken.
 The State of a buffer object immediately fter it is first bound is an unmapped zero-sized memory buffer wit *GL_READ_WRITE* access and *GL_STATIC_DRAW* usage.
+
 When a non-zero buffer object is bound to the *GL_ARRAY_BUFFER* target, the vertex array pointer param is interpreted as an offset within the buffer object mesaured in basic machine units.
 
 ### void glBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage)
@@ -136,15 +139,21 @@ When a non-zero buffer object is bound to the *GL_ARRAY_BUFFER* target, the vert
 #### Description
 Create a new data store for a buffer object. In case of `glBufferData`, the buffer object currently bound to `target` is used.
 While creating the new storage, any pre-existing data store is deleted. The new data sotre is created with the specified `size` in bytes and `usage`. If `data` is not NULL, the data sotre is initialized with data from this pointer. In its initial state, the new data sotre is not mapped, it has a NULL, mapped pointer, and its mapped access is *GL_READ_WRITE*.
+
 `usage` is a hint to the GL implementation as to how a buffer object's data store will be accessed. This enables the GL implementation to make more intelligent decisions that may significantly impact buffer object performance. It does not, however, constrain the actual usage of the data store. It does not, however, constrain the actual usage of the data store. `usage` can be brokken down into two parts: first, the frequency of access (modification and usage), and second, the nature of that access. The frequency of access may be one of these:
+
 **STREAM**: The data store contents will be modified once and used at most a few times.
+
 **STATIC**: The data store contents will be modified once and used many times.
+
 **DYNAMIC**: The data store contents will be modified repatedly and used many times.
 
 The nature of access may be one of these:
 
 **DRAW**: The data store contents are modified by the application, and used as the source for GL drawing and image specification commands.
+
 **READ**: The data store contents are modified by reading data from the GL, and used to return that data when queried by the application.
+
 **COPY**: The data store contents are modified by reading data from the GL, and used as the source for GL drawing and image specification commands.
 
 #### void glEnableVertexAttribArray(GLuint index)
@@ -186,22 +195,35 @@ Sets the soruce code in `shader` to the source code in the array of strings spec
 
 #### Description
 Specifies multiple geometric primitives with very few subroutine calls. Instead of calling a GL function to pass each individual vertex, normal, texture coordinate, edge flag or color, you can prespecify  separate arrays of vertices, normals, and so on, and use them to construct a sequence of primitives with a single call to `glDrawElements`.
+
 When `glDrawElements` is called, it uses `count` sequencial elements from an enabled array, starting at `indicies` to construct a sequence of geometric primitives. `mode` specifies what kind of primitives are constructed and how the array elements construct these primitives. If more than one array is enabled, each is used.
+
 Vertex attributes that are modified by `glDrawElements` have an unspecified value after `glDrawElements` returns. Attributes that aren't modified maintain their previous values.
 
 ### void glTextParameteri(GLenum target, GLenum pname, GLint param)
 #### Parameters
 - `target`: Specifies the target to which the texture is bound for `glTexParameter`functions.
 - `texture`: Specifies the texture object name for `glTextureParameters` functions.
-- `pname`: Specifies the symbolic name of a single-valued texture parameter.
+- `pname (parameter name)`: Specifies the symbolic name of a single-valued texture parameter.
 - `param`: For the scalar commands, specifies the value of `pname`
 
 #### Description
 Assign the value or values in `params` to the texture parameter specified as `pname`. For `glTexParameter`, `target` defines the target texture, either `GL_TEXTURE_1D`, `GL_TEXTURE_1D_ARRAY`, `GL_TEXTURE_2D`, `GL_TEXTURE_2D_ARRAY`, `GL_TEXTURE_2D_MULTISAMPLE`, `GL_TEXTURE_2D_MULTISAMPLE_ARRAY`, `GL_TEXTURE_3D`, `GL_TEXTURE_CUBE_MAP`, `GL_TEXTURE_CUBE_MAP_ARRAY`, or `GL_TEXTURE_RECTANGLE`. The following symbols are accepted in `pname` (not all are here, only the ones I already used):
 
 *GL_TEXTURE_MIN_FILTER*
-The texture minifying function is used whenever the level-of-detail function used when sampling from the texture determines that the texture should be minified. There are six defined minifying functions. Two of them use either the nearest texture elements or a weighted average of multiple texture elements to compute the texture value. The other four use mipmaps.
-A mipmap is an ordered set of arrays representing the same image at progressively lower resolutions. If the texture has dimensions 2 ^ n * 2 ^ m, there are *max(n,m) + 1* mipmaps. The first mipmap is the original texture, with dimensions 2 ^ n * 2 ^ m. Each subsequent mipmap has dimensions 2 ^ (k−1) * 2 ^ (l−1), where 2 ^ k * 2 ^ l are the dimensions of the previous mipmap, until either k = 0 or l = 0. At that point, subsequent mipmaps have dimension 1 * 2 ^ (k-1) * 1 until the final mipmap, which has dimension 1 * 1. To define the mipmaps, call `glTexImage1D`, `glTexImage2D`, `glTexImage3D`, `glCopyTexImage1D`, or `glCopyTexImage2D` with the *level* argument indicating the order of the mipmaps. Level 0 is the original texture; level max(n,m) is the final 1 * 1 mipmap.
-`params` supplies a function for minifying the texture as one of the following:
-- *GL_LINEAR*: Returns the weighted avarage of the four texture elements that are closest to the specified texture coordinates. These can include items wrapped or repeated from other parts of a texture, depending on the values of *GL_TEXTURE_WRAP_S* and *GL_TEXTURE_WRAP_T*, and on the exact mapping.
 
+The texture minifying function is used whenever the level-of-detail function used when sampling from the texture determines that the texture should be minified. There are six defined minifying functions. Two of them use either the nearest texture elements or a weighted average of multiple texture elements to compute the texture value. The other four use mipmaps.
+
+A mipmap is an ordered set of arrays representing the same image at progressively lower resolutions. If the texture has dimensions 2 ^ n * 2 ^ m, there are *max(n,m) + 1* mipmaps. The first mipmap is the original texture, with dimensions 2 ^ n * 2 ^ m. Each subsequent mipmap has dimensions 2 ^ (k−1) * 2 ^ (l−1), where 2 ^ k * 2 ^ l are the dimensions of the previous mipmap, until either k = 0 or l = 0. At that point, subsequent mipmaps have dimension 1 * 2 ^ (k-1) * 1 until the final mipmap, which has dimension 1 * 1. To define the mipmaps, call `glTexImage1D`, `glTexImage2D`, `glTexImage3D`, `glCopyTexImage1D`, or `glCopyTexImage2D` with the *level* argument indicating the order of the mipmaps. Level 0 is the original texture; level max(n,m) is the final 1 * 1 mipmap.
+
+`params` supplies a function for minifying the texture as one of the following:
+- *GL_LINEAR*: Returns the weighted avarage of the four texture elements that are closest to the specified texture coordinates. These can include items wrapped or repeated from other parts of a texture, depending on the values of *GL_TEXTURE_WRAP_S* and *GL_TEXTURE_WRAP_T*, and on the exact mapping. (maintain proportion?)
+
+*GL_TEXTURE_WRAP_S*
+
+Sets the wrap parameter for texture coordinate s to either *GL_CLAMP_TO_EDGE*, *GL_CLAMP_TO_BORDER*, *GL_MIRRORED_REPEAT*, *GL_REPEAT*, or *GL_MIRROR_CLAMP_TO_EDGE*. *GL_CLAMP_TO_EDGE* causes s coordinates to be clamped to the range [1/2N,1 - 1/2N], where N is the size of the texture in the direction of clamping. *GL_CLAMP_TO_BORDER* evaluates s coordinates in a similar manner to *GL_CLAMP_TO_EDGE*
+
+### void glTexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* data)
+#### Parameters
+- `target`: Specifies the target texture.
+- `level`: Specifies the level-of-detail number. Level 0 is the base image level. Level *n* is the *n*th mipmap reduction image. If `target` is *GL_TEXTURE_RECTANGLE* or *GL_PROXY_TEXTURE_RECTANGLE*, `level` must be 0.
