@@ -18,6 +18,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -92,18 +96,15 @@ int main(void)
         // multiplying the first 4 numbers will get the result of a 4x3 matrix
         glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
         // creating view matrix
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-0.3f, 0, 0));
-        // creating model matrix
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.2f, 0.5f, 0));
-
-        // Actually in OpenGL the order is PVM, not MVP
-        // creating the PVM
-        glm::mat4 mvp = proj * view * model;
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+        
+        //glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.2f, 0.5f, 0
+        //glm::mat4 mvp = proj * view * model;
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.5f, 0.0f, 0.5f, 1.0f);
-        shader.SetUniformMat4f("u_MVP", mvp);
+        /*shader.SetUniformMat4f("u_MVP", mvp);*/
 
         Texture texture("res/textures/image.png");
         texture.Bind();
@@ -116,6 +117,19 @@ int main(void)
 
         Renderer renderer;
 
+        // Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
+
+        // Setup Platform/Renderer backends
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init("#version 330");
+
+        glm::vec3 translation(0, 0, 0);
+
         float r = 0.0f;
         float increment = 0.05f;
 
@@ -125,8 +139,20 @@ int main(void)
             /* Render here */
             renderer.Clear();
 
+			// Start the Dear ImGui frame
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+            // creating model matrix
+			glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+			// Actually in OpenGL the order is PVM, not MVP
+		    // creating the PVM
+			glm::mat4 mvp = proj * view * model;
+
             shader.Bind();
             shader.SetUniform4f("u_Color", r, 0.0f, 0.5f, 1.0f);
+            shader.SetUniformMat4f("u_MVP", mvp);
 
             renderer.Draw(va, ib, shader);
 
@@ -136,6 +162,19 @@ int main(void)
                 increment = 0.05f;
 
             r += increment;
+			{
+				// setting up ImGui window
+				ImGui::Begin("Debug");
+
+				ImGui::SliderFloat2("Translation", &translation.x, -2.0f, 2.0f);
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+				ImGui::End();
+			}
+
+            // Rendering
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
@@ -144,6 +183,10 @@ int main(void)
             glfwPollEvents();
         }
     }
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
     glfwTerminate();
     return 0;

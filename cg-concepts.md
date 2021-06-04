@@ -61,7 +61,7 @@ For C++ with OpenGL, we can use the lib GLM (OpenGL Mathematics) for handling wi
 ### Matrices
 **Model View Projection Matrices**: Model * View * Projection. The product of this operation is a matrix that will be used in the multiplication of the positions given by the vertex.
 
-Each matrix has its use. The projection we already covered, but here is the definition of the Model and View matrices:
+Each matrix has its use. The projection we already covered, but here is the definition of the Model and View matrices: 
 Transform - Position, rotation, translation.
 - View matrix (a.k.a eye matrix): simulates a camera with transform properties.
 - Model matrix: simulate the model (vertex) we're drawing in a matrix. Transform properties.
