@@ -28,7 +28,44 @@ Are used for:
 
 Each bitmap image of the mipmap set is a downsized duplicate of the main texture, but at a certain reduced level of detail. Although the main texture would still be used when the view is sufficient to render it in full detail, the renderer will switch to a suitable mipmap image (or in fact, interpolate between the two nearest, if trillinear filtering is activated), when the texture is viewed from a distance or at a small size. Rendering speed increases since the number of texture pixels (texels) being processed per display pixel can be much lower for similar results with the simpler mipmap textures. If using a limited number of texture samples per display pixel (as in the case with bilinear filtering) then artifacts are reduced since the mipmap images are effectively already anti-aliased. Scaling down and up is made more efficient with mipmaps as well.
 
-## Math: Distances
+## Projection
+How we go from having an arbitrary coordinate system in our 3D world to map it to our window, maths that converts 3D points in the space into something that is in a 2D window.
+
+Convert the positions we have into normalized device coordinates.
+Normalized space: coordinate system between -1 and 1.
+
+Projection let's u decide what ur coordinate space is.
+
+### Ortographic
+Usually used for 2D games or UI.
+In OpenGL, we have the coordinate system between -1 and 1. To convert it to a better system, we use some matrix, as is shown bellow that simulates what happens in the GPU side (GLSL)
+```cpp
+// matrix with x, y and z values wanted for the new resolution scale
+glm::mat4 projection = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+// coordinates where we want to draw the vertice (values of x, y, z and w)
+glm::vec4 positions(100.0f, 100.0f, 0.0f, 1.0f);
+
+// now multiplying to convert the values to a scale OpenGL understands (-1 to 1)
+glm::vec4 result = projection * positions;
+```
+This operation will result in something between -1 and 1.
+
+### Perspective
+Usually 3D.
+
+## Maths: Basics
+Mahts are used a lot for mainly transformations on Computer Graphics.
+For C++ with OpenGL, we can use the lib GLM (OpenGL Mathematics) for handling with maths.
+### Vectors
+
+### Matrices
+**Model View Projection Matrices**: Model * View * Projection. The product of this operation is a matrix that will be used in the multiplication of the positions given by the vertex.
+
+Each matrix has its use. The projection we already covered, but here is the definition of the Model and View matrices:
+Transform - Position, rotation, translation.
+- View matrix (a.k.a eye matrix): simulates a camera with transform properties.
+- Model matrix: simulate the model (vertex) we're drawing in a matrix. Transform properties.
+## Maths: Distances
 ### Manhattan distance
 The manhattan distance between two vectors is equal to the one-norm of the distance between the vectors. The distance function (also called a "metric") involved is also called the "taxi cab" metric.
 

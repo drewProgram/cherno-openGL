@@ -91,11 +91,19 @@ int main(void)
         // 4 units left to right
         // multiplying the first 4 numbers will get the result of a 4x3 matrix
         glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+        // creating view matrix
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-0.3f, 0, 0));
+        // creating model matrix
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.2f, 0.5f, 0));
+
+        // Actually in OpenGL the order is PVM, not MVP
+        // creating the PVM
+        glm::mat4 mvp = proj * view * model;
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.5f, 0.0f, 0.5f, 1.0f);
-        shader.SetUniformMat4f("u_MVP", proj);
+        shader.SetUniformMat4f("u_MVP", mvp);
 
         Texture texture("res/textures/image.png");
         texture.Bind();
